@@ -5,18 +5,26 @@
   "main": "main.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --watch --loader ts-node/esm --experimental-specifier-resolution node main.ts"
+    "test": "node --loader ts-node/esm --experimental-specifier-resolution node test.ts",
+    "start": "node --loader ts-node/esm --experimental-specifier-resolution node main.ts"
   },
   "author": "Kenzuya",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.2.0",
+    "cheerio": "^1.0.0-rc.12",
     "googleapis": "^109.0.1",
     "mime-types": "^2.1.35",
-    "telegraf": "^4.11.2"
+    "node-fetch": "^2.6.7",
+    "telegraf": "^4.11.2",
+    "user-agents": "^1.0.1212"
   },
   "devDependencies": {
     "@types/mime-types": "^2.1.1",
-    "@types/node": "^18.11.9"
+    "@types/node": "^18.11.9",
+    "@types/node-fetch": "^2.6.2",
+    "@types/user-agents": "^1.0.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.3"
   }
 }
