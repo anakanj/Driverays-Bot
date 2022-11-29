@@ -3,20 +3,6 @@ import { google, drive_v3 } from "googleapis";
 // import path from "path";
 import mime from "mime-types";
 import { createReadStream } from "fs";
-// const CLIENT_ID =
-// "387577156343-kcq3tv2jhoq2gn88vbd2796ant5u5v7p.apps.googleusercontent.com";
-// const CLIENT_SECRET = "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";
-// const REDIRECT_URI = "https://developers.google.com/oauthplayground";
-// const REFRESH_TOKEN =
-// "1//04VTk9eRAtomcCgYIARAAGAQSNwF-L9Ir37GIfTC5Yyy-UKmacoLc1ob2PAYPLSbq2RNCcoSmhRG1yTZt2-3cIpUIQCL-ccHdQqE";
-
-// const oauth2client = new google.auth.OAuth2({
-// 	clientId: CLIENT_ID,
-// 	clientSecret: CLIENT_SECRET,
-// 	redirectUri: REDIRECT_URI,
-// });
-
-// console.log(typeof oauth2client);
 
 export default class GoogleDrive {
 	private readonly drive: drive_v3.Drive;
