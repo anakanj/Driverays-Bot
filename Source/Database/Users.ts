@@ -4,7 +4,7 @@ import * as dotenv from "dotenv";
 dotenv.config({ path: `${process.cwd()}/.env` });
 
 mongoose.connect(process.env.MONGODB_URI_USERS!, (e) =>
-	e ? console.log(e.message) : console.log("Database is Connected..."),
+	e ? console.log(e.message) : undefined,
 );
 
 const UserSchema = new mongoose.Schema<User>({
