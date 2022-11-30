@@ -3,10 +3,10 @@ import { User } from "typegram";
 import * as dotenv from "dotenv";
 dotenv.config({ path: `${process.cwd()}/.env` });
 
-mongoose.connect(process.env.MONGODB_URI_USERS!, (e) =>
+mongoose.connect(process.env.MONGODB_URI!, (e) =>
 	e ? console.log(e.message) : undefined,
 );
-
+const users = mongoose.connection.useDb("Users");
 const UserSchema = new mongoose.Schema<User>({
 	id: mongoose.Schema.Types.Number,
 	is_bot: mongoose.Schema.Types.Boolean,
@@ -17,4 +17,4 @@ const UserSchema = new mongoose.Schema<User>({
 	language_code: mongoose.Schema.Types.String,
 });
 
-export default mongoose.model<User>("data", UserSchema);
+export default users.model<User>("data", UserSchema);
