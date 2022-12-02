@@ -108,11 +108,18 @@ export default class GoogleDrive {
 			console.log("There a error while creating folder\n", err);
 		}
 	}
-	public async listFiles() {
+	public async listFiles(inFolderId?: string) {
 		const results = await this.drive.files.list({
 			corpora: "user",
 			fields: "nextPageToken, files(*)",
 		});
-		return results.data;
+		if (inFolderId) {
+			const mappedFiles = results.data.files?.filter((value) =>
+				value.parents?.includes(inFolderId),
+			);
+			return { ...results.data, files: mappedFiles };
+		} else {
+			return results.data;
+		}
 	}
 }
