@@ -90,7 +90,7 @@ export default class GoogleDrive {
 			},
 			fields: "id",
 		});
-		return result;
+		return result as unknown as Awaited<typeof result>;
 	}
 	public async createFolderInFolder(folderName: string, folderId: string) {
 		try {
@@ -108,18 +108,27 @@ export default class GoogleDrive {
 			console.log("There a error while creating folder\n", err);
 		}
 	}
-	public async listFiles(inFolderId?: string) {
+	public async listFiles(inFolderId?: string, includesTrash = false) {
 		const results = await this.drive.files.list({
 			corpora: "user",
 			fields: "nextPageToken, files(*)",
 		});
 		if (inFolderId) {
 			const mappedFiles = results.data.files?.filter((value) =>
-				value.parents?.includes(inFolderId),
+				includesTrash
+					? value.parents?.includes(inFolderId)
+					: value.parents?.includes(inFolderId) && value.trashed === false,
 			);
 			return { ...results.data, files: mappedFiles };
 		} else {
-			return results.data;
+			if (includesTrash) {
+				return results.data;
+			} else {
+				return {
+					...results.data,
+					files: results.data.files?.filter((value) => value.trashed === false),
+				};
+			}
 		}
 	}
 }
