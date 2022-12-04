@@ -35,11 +35,6 @@ Sinopsis : <span class="tg-spoiler">${data.synopsis}</span>
 			data.link_download.find((x) => x["1080p"])?.["1080p"]?.Googledrive!,
 		);
 
-		const markup = Markup.inlineKeyboard([
-			Markup.button.callback("480p", `480p ${session_480p}`),
-			Markup.button.callback("720p", `720p ${session_720p}`),
-			Markup.button.callback("1080p", `1080p ${session_1080p}`),
-		]);
 		await tg.telegram.sendPhoto(
 			tg.update.message.from.id,
 			{ url: data.image },
@@ -47,7 +42,16 @@ Sinopsis : <span class="tg-spoiler">${data.synopsis}</span>
 				caption,
 				parse_mode: "HTML",
 				// Markup
-				...markup,
+				reply_markup: {
+					inline_keyboard: [
+						[
+							Markup.button.callback("480p", `480p ${session_480p}`),
+							Markup.button.callback("720p", `720p ${session_720p}`),
+							Markup.button.callback("1080p", `1080p ${session_1080p}`),
+						],
+						[Markup.button.callback("Close", "close")],
+					],
+				},
 			},
 		);
 		tg.deleteMessage(context.message_id);
@@ -58,7 +62,7 @@ Sinopsis : <span class="tg-spoiler">${data.synopsis}</span>
 			context.chat.id,
 			context.message_id,
 			undefined,
-			'Terjadi Error ketika mendapatkan info URL..."',
+			"Terjadi Error ketika mendapatkan info URL...",
 		);
 		// tg.reply();
 		console.log(err);
