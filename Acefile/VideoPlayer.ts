@@ -1,6 +1,14 @@
 import fetch from "node-fetch";
 import cheerio from "cheerio";
 import vm from "vm";
+interface AceFile {
+	kind: string
+	id: string
+	name: string
+	mimeType:  string
+	md5Checksum: string
+	direct_link: string
+}
 async function AceFileVideoPlayer(url: string) {
 	const html = await (await fetch(url)).text();
 	const $ = cheerio.load(html);
@@ -39,7 +47,7 @@ async function AceFileVideoPlayer(url: string) {
 		alt: "media",
 		key: urls.searchParams.get("key")!,
 	}).toString();
-	const results = {
+	const results: AceFile = {
 		...json,
 		direct_link: `${urls.origin + urls.pathname}?${params}`,
 	};
