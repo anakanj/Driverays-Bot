@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "node --loader ts-node/esm --experimental-specifier-resolution node test.ts",
-    "start": "node --watch --loader ts-node/esm --experimental-specifier-resolution node main.ts"
+    "start": "node --watch --loader ts-node/esm --experimental-specifier-resolution node main.ts",
+    "dev": "nodemon --watch './**/*.ts' --exec 'node --experimental-specifier-resolution=node --loader ts-node/esm' main.ts"
   },
   "author": "Kenzuya",
   "license": "ISC",
@@ -22,6 +23,7 @@
     "mongodb": "^4.12.1",
     "mongoose": "^6.7.3",
     "node-fetch": "^2.6.7",
+    "progress-stream": "^2.0.0",
     "telegraf": "^4.11.2",
     "user-agents": "^1.0.1212"
   },
@@ -29,6 +31,7 @@
     "@types/mime-types": "^2.1.1",
     "@types/node": "^18.11.9",
     "@types/node-fetch": "^2.6.2",
+    "@types/progress-stream": "^2.0.2",
     "@types/user-agents": "^1.0.2",
     "lit-html": "^2.4.0",
     "ts-node": "^10.9.1",

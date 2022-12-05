@@ -1,9 +1,13 @@
 // import { OAuth2Client } from "google-auth-library";
 import { google, drive_v3 } from "googleapis";
 // import path from "path";
+import progress from "progress-stream";
 import mime from "mime-types";
-import { createReadStream } from "fs";
+import { createReadStream, createWriteStream } from "fs";
 
+interface DownloadOptions extends progress.Options {
+	onDownload?: (progress: progress.Progress) => void;
+}
 export default class GoogleDrive {
 	private readonly drive: drive_v3.Drive;
 	constructor(
@@ -70,16 +74,40 @@ export default class GoogleDrive {
 		});
 		return result.data;
 	}
-	public async downloadFile(fileId: string) {
-		try {
-			const file = await this.drive.files.get({
-				fileId,
-				alt: "media",
-			});
-			return file.status;
-		} catch (err) {
-			throw new Error("Failed to download file");
-		}
+	public async downloadFile(
+		fileId: string,
+		path: string,
+		options: DownloadOptions,
+	) {
+		return new Promise((resolve, reject) => {
+			this.drive.files
+				.get(
+					{
+						fileId,
+						alt: "media",
+					},
+					{
+						responseType: "stream",
+					},
+				)
+				.then((file) => {
+					const str = progress({
+						length: parseInt(file.headers["content-length"]),
+						...options,
+					});
+					const stream = createWriteStream(path);
+					// stream.pipe()
+					file.data.pipe(str).pipe(stream);
+					str.on("progress", (progress) => {
+						if (typeof options.onDownload === "function") {
+							options.onDownload(progress);
+						}
+					});
+					str.on("error", reject);
+					resolve(file.status);
+				})
+				.catch(reject);
+		});
 	}
 	public async createFolder(folderName: string) {
 		const result = this.drive.files.create({
