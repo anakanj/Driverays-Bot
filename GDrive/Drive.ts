@@ -77,7 +77,7 @@ export default class GoogleDrive {
 	public async downloadFile(
 		fileId: string,
 		path: string,
-		options: DownloadOptions,
+		options?: DownloadOptions,
 	) {
 		return new Promise((resolve, reject) => {
 			this.drive.files
@@ -99,8 +99,8 @@ export default class GoogleDrive {
 					// stream.pipe()
 					file.data.pipe(str).pipe(stream);
 					str.on("progress", (progress) => {
-						if (typeof options.onDownload === "function") {
-							options.onDownload(progress);
+						if (typeof options?.onDownload === "function") {
+							options?.onDownload(progress);
 						}
 					});
 					str.on("error", reject);
