@@ -59,7 +59,10 @@ export namespace Session {
 	// schema.index({ createdAt: 1 }, { expireAfterSeconds: 3600 });
 	const model = session.model<Sessions>("link", schema);
 
-	export async function store(user_id: number, data: string): Promise<string> {
+	export async function store(
+		user_id: number,
+		data: Metadata,
+	): Promise<string> {
 		const key = crypto.randomBytes(5).toString("hex");
 		const session = new model({
 			user_id,
