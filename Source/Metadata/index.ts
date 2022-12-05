@@ -22,18 +22,9 @@ Sinopsis : <span class="tg-spoiler">${data.synopsis}</span>
 
 		`;
 
-		const session_480p = await Session.store(
-			tg.update.message.from.id,
-			data.link_download.find((x) => x["480p"])?.["480p"]?.Googledrive!,
-		);
-		const session_720p = await Session.store(
-			tg.update.message.from.id,
-			data.link_download.find((x) => x["720p"])?.["720p"]?.Googledrive!,
-		);
-		const session_1080p = await Session.store(
-			tg.update.message.from.id,
-			data.link_download.find((x) => x["1080p"])?.["1080p"]?.Googledrive!,
-		);
+		const session_480p = await Session.store(tg.update.message.from.id, data);
+		const session_720p = await Session.store(tg.update.message.from.id, data);
+		const session_1080p = await Session.store(tg.update.message.from.id, data);
 
 		await tg.telegram.sendPhoto(
 			tg.update.message.from.id,
