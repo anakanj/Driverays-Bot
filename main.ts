@@ -1,4 +1,4 @@
-import bot from "./Source/main";
+import bot, { drive } from "./Source/main";
 import { Logger } from "./Source/Utils/Logger";
 import GoogleDrive from "./GDrive/Drive";
 import * as dotenv from "dotenv";
@@ -11,12 +11,6 @@ import "./Source/Middleware";
 import "./Source/Downloader";
 import "./Source/Actions/CloseButton";
 async function init() {
-	const drive = new GoogleDrive(
-		process.env.CLIENT_ID!,
-		process.env.CLIENT_SECRET!,
-		process.env.REDIRECT_URI!,
-		process.env.REFRESH_TOKEN!,
-	);
 	Logger.info("Checking Files");
 	const { files } = await drive.listFiles();
 	// console.log(files);
