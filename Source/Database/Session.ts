@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 import crypto from "crypto";
+import { Metadata } from "../../Driverays/Metadata";
 interface Sessions {
 	user_id: string;
 	key: string;
-	data: string;
+	data: Metadata;
 	createdAt?: Date;
 }
 
@@ -13,7 +14,45 @@ export namespace Session {
 	const schema = new mongoose.Schema<Sessions>({
 		user_id: Number,
 		key: String,
-		data: String,
+		data: {
+			title: String,
+			year: String,
+			thumbnail: String,
+			image: String,
+			score: String,
+			quality: String,
+			tagline: String,
+			duration: String,
+			rating: String,
+			genre: [String],
+			synopsis: String,
+			link_download: [
+				{
+					"480p": {
+						Googledrive: String,
+						"1fichier": String,
+						Mega: String,
+						Uptobox: String,
+					},
+				},
+				{
+					"720p": {
+						Googledrive: String,
+						"1fichier": String,
+						Mega: String,
+						Uptobox: String,
+					},
+				},
+				{
+					"1080p": {
+						Googledrive: String,
+						"1fichier": String,
+						Mega: String,
+						Uptobox: String,
+					},
+				},
+			],
+		},
 		createdAt: Date,
 	});
 

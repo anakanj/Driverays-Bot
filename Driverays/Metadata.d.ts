@@ -1,4 +1,4 @@
-interface Metadata {
+export interface Metadata {
 	title: string;
 	year: string;
 	thumbnail: string;
@@ -9,8 +9,7 @@ interface Metadata {
 	duration: string;
 	rating: string;
 	genre: string[];
-	synopsis;
-	string;
+	synopsis: string;
 	link_download: SelectResolution[];
 }
 
