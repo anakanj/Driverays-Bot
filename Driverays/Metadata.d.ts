@@ -10,7 +10,7 @@ export interface Metadata {
 	rating: string;
 	genre: string[];
 	synopsis: string;
-	link_download: SelectResolution[];
+	link_download: SelectResolution;
 }
 
 interface LinkDownload {

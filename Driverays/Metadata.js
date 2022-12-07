@@ -87,7 +87,7 @@ async function DriveraysMetadata(url) {
 		rating,
 		genre,
 		synopsis,
-		link_download,
+		link_download: Object.assign({}, ...link_download),
 	};
 	// console.log(json.link_download);
 	return json;
