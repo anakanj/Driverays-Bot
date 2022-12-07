@@ -22,9 +22,7 @@ Sinopsis : <span class="tg-spoiler">${data.synopsis}</span>
 
 		`;
 
-		const session_480p = await Session.store(tg.update.message.from.id, data);
-		const session_720p = await Session.store(tg.update.message.from.id, data);
-		const session_1080p = await Session.store(tg.update.message.from.id, data);
+		const session_key = await Session.store(tg.update.message.from.id, data);
 
 		await tg.telegram.sendPhoto(
 			tg.update.message.from.id,
@@ -36,9 +34,9 @@ Sinopsis : <span class="tg-spoiler">${data.synopsis}</span>
 				reply_markup: {
 					inline_keyboard: [
 						[
-							Markup.button.callback("480p", `480p ${session_480p}`),
-							Markup.button.callback("720p", `720p ${session_720p}`),
-							Markup.button.callback("1080p", `1080p ${session_1080p}`),
+							Markup.button.callback("480p", `480p ${session_key}`),
+							Markup.button.callback("720p", `720p ${session_key}`),
+							Markup.button.callback("1080p", `1080p ${session_key}`),
 						],
 						[Markup.button.callback("Close", "close")],
 					],

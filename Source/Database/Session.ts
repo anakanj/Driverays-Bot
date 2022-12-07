@@ -26,32 +26,26 @@ export namespace Session {
 			rating: String,
 			genre: [String],
 			synopsis: String,
-			link_download: [
-				{
-					"480p": {
-						Googledrive: String,
-						"1fichier": String,
-						Mega: String,
-						Uptobox: String,
-					},
+			link_download: {
+				"480p": {
+					Googledrive: String,
+					"1fichier": String,
+					Mega: String,
+					Uptobox: String,
 				},
-				{
-					"720p": {
-						Googledrive: String,
-						"1fichier": String,
-						Mega: String,
-						Uptobox: String,
-					},
+				"720p": {
+					Googledrive: String,
+					"1fichier": String,
+					Mega: String,
+					Uptobox: String,
 				},
-				{
-					"1080p": {
-						Googledrive: String,
-						"1fichier": String,
-						Mega: String,
-						Uptobox: String,
-					},
+				"1080p": {
+					Googledrive: String,
+					"1fichier": String,
+					Mega: String,
+					Uptobox: String,
 				},
-			],
+			},
 		},
 		createdAt: Date,
 	});
