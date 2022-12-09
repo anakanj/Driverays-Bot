@@ -10,7 +10,7 @@ export interface Metadata {
 	rating: string;
 	genre: string[];
 	synopsis: string;
-	link_download: SelectResolution;
+	link_download: Partial<Record<"480p" | "720p" | "1080p", LinkDownload>>;
 }
 
 interface LinkDownload {
@@ -20,9 +20,4 @@ interface LinkDownload {
 	Uptobox?: string;
 }
 
-interface SelectResolution {
-	"480p"?: LinkDownload;
-	"720p"?: LinkDownload;
-	"1080p"?: LinkDownload;
-}
 export function DriveraysMetadata(url: string): Promise<Metadata>;
