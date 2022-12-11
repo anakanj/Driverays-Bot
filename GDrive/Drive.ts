@@ -6,9 +6,11 @@ import mime from "mime-types";
 import { createReadStream, createWriteStream, statSync } from "fs";
 import { MethodOptions } from "googleapis/build/src/apis/abusiveexperiencereport";
 import { convertToPercentage } from "../Source/Utils/Formatters";
+import axios from "axios";
 
 interface DownloadOptions extends progress.Options {
 	onDownload?: (progress: progress.Progress) => void;
+	useProgress?: boolean;
 }
 export interface OnUploadProgress {
 	bytesRead: number;
@@ -116,7 +118,7 @@ export default class GoogleDrive {
 		path: string,
 		options?: DownloadOptions,
 	) {
-		return new Promise((resolve, reject) => {
+		return new Promise<progress.ProgressStream | number>((resolve, reject) => {
 			this.drive.files
 				.get(
 					{
@@ -140,8 +142,10 @@ export default class GoogleDrive {
 							options?.onDownload(progress);
 						}
 					});
-					str.on("error", reject);
-					resolve(file.status);
+
+					// str.on("error", reject);
+					if (options?.useProgress) resolve(str);
+					else resolve(file.status);
 				})
 				.catch(reject);
 		});
