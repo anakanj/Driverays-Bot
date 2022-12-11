@@ -200,4 +200,10 @@ export default class GoogleDrive {
 			}
 		}
 	}
+	public async getDirectLink(fileId: string) {
+		const res = await axios.get<{ url: string }>(
+			`https://www.bagusdl.pro/drive/direct.php?id=${fileId}`,
+		);
+		return res.data;
+	}
 }
