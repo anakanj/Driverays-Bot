@@ -3,10 +3,22 @@ import { google, drive_v3 } from "googleapis";
 // import path from "path";
 import progress from "progress-stream";
 import mime from "mime-types";
-import { createReadStream, createWriteStream } from "fs";
+import { createReadStream, createWriteStream, statSync } from "fs";
+import { MethodOptions } from "googleapis/build/src/apis/abusiveexperiencereport";
+import { convertToPercentage } from "../Source/Utils/Formatters";
 
 interface DownloadOptions extends progress.Options {
 	onDownload?: (progress: progress.Progress) => void;
+}
+export interface OnUploadProgress {
+	bytesRead: number;
+	size: number;
+	percentage: number;
+}
+interface UploadOptions extends MethodOptions {
+	onUpload?: (progress: OnUploadProgress) => void;
+	useProgress?: boolean;
+	progressOptions?: Omit<progress.Options, "length">;
 }
 export default class GoogleDrive {
 	private readonly drive: drive_v3.Drive;
@@ -28,26 +40,51 @@ export default class GoogleDrive {
 			auth: oauth2client,
 		});
 	}
-	public async uploadFiles(path: string, filename: string) {
-		const type = mime.lookup(filename);
-		if (!type) {
-			throw new Error("Cannot get File Type");
-		}
-		try {
-			const response = await this.drive.files.create({
-				requestBody: {
-					name: filename,
-					mimeType: type as string,
-				},
-				media: {
-					mimeType: type as string,
-					body: createReadStream(path),
-				},
+	public async uploadFiles<T>(
+		path: string,
+		filename: string,
+		options?: UploadOptions,
+	) {
+		return new Promise<T>((resolve, reject) => {
+			const type = mime.lookup(filename);
+			if (!type) {
+				throw new Error("Cannot get File Type");
+			}
+			const stats = statSync(path);
+			const Progress = progress({
+				length: stats.size,
+				time: options?.progressOptions?.time
+					? options.progressOptions.time
+					: 2000,
 			});
-			return response.data;
-		} catch (err) {
-			throw new Error("There's a problem when uploading a file...");
-		}
+			const stream = createReadStream(path).pipe(Progress);
+			const response = this.drive.files.create(
+				{
+					requestBody: {
+						name: filename,
+						mimeType: type as string,
+					},
+					media: {
+						mimeType: type as string,
+						body: stream,
+					},
+				},
+				{
+					onUploadProgress(progress) {
+						if (typeof options?.onUpload === "function") {
+							options?.onUpload({
+								bytesRead: progress.bytesRead,
+								size: stats.size,
+								percentage: convertToPercentage(progress.bytesRead, stats.size),
+							});
+						}
+					},
+					...options,
+				},
+			);
+			if (options?.useProgress) resolve(Progress as never);
+			else response.then((value) => resolve(value as never));
+		});
 	}
 	public async deleteFile(fileId: string) {
 		try {
