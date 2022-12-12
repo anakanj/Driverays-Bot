@@ -1,12 +1,10 @@
 // import { OAuth2Client } from "google-auth-library";
 import { google, drive_v3 } from "googleapis";
-// import path from "path";
 import progress from "progress-stream";
 import mime from "mime-types";
 import { createReadStream, createWriteStream, statSync } from "fs";
 import { MethodOptions } from "googleapis/build/src/apis/abusiveexperiencereport";
 import { convertToPercentage } from "../Source/Utils/Formatters";
-import axios from "axios";
 
 interface DownloadOptions extends progress.Options {
 	onDownload?: (progress: progress.Progress) => void;
@@ -19,17 +17,21 @@ export interface OnUploadProgress {
 }
 interface UploadOptions extends MethodOptions {
 	onUpload?: (progress: OnUploadProgress) => void;
-	useProgress?: boolean;
+	// useProgress?: boolean;
 	progressOptions?: Omit<progress.Options, "length">;
+	onProgress?: (progress: progress.ProgressStream) => void;
+	returnStreamEvents?: boolean;
 }
+interface UploadParameters {
+	path: string;
+	filename: string;
+	folderId?: string;
+}
+
 export default class GoogleDrive {
 	private readonly drive: drive_v3.Drive;
-	constructor(
-		CLIENT_ID: string,
-		CLIENT_SECRET: string,
-		REDIRECT_URI: string,
-		REFRESH_TOKEN: string,
-	) {
+	private _lastUploadProgressFunctionRun: number | undefined;
+	constructor(CLIENT_ID: string, CLIENT_SECRET: string, REDIRECT_URI: string, REFRESH_TOKEN: string) {
 		const oauth2client = new google.auth.OAuth2({
 			clientId: CLIENT_ID,
 			clientSecret: CLIENT_SECRET,
@@ -41,13 +43,10 @@ export default class GoogleDrive {
 			version: "v3",
 			auth: oauth2client,
 		});
+		this._lastUploadProgressFunctionRun = undefined;
 	}
-	public async uploadFiles<T>(
-		path: string,
-		filename: string,
-		options?: UploadOptions,
-	) {
-		return new Promise<T>((resolve, reject) => {
+	public async uploadFiles({ path, filename, folderId }: UploadParameters, options?: UploadOptions) {
+		return new Promise<progress.ProgressStream | drive_v3.Schema$File>((resolve, reject) => {
 			const type = mime.lookup(filename);
 			if (!type) {
 				throw new Error("Cannot get File Type");
@@ -55,37 +54,67 @@ export default class GoogleDrive {
 			const stats = statSync(path);
 			const Progress = progress({
 				length: stats.size,
-				time: options?.progressOptions?.time
-					? options.progressOptions.time
-					: 2000,
+				time: options?.progressOptions?.time ? options.progressOptions.time : 2000,
 			});
 			const stream = createReadStream(path).pipe(Progress);
-			const response = this.drive.files.create(
-				{
-					requestBody: {
-						name: filename,
-						mimeType: type as string,
-					},
-					media: {
-						mimeType: type as string,
-						body: stream,
-					},
+			type UploadParams = drive_v3.Params$Resource$Files$Create;
+			const params: UploadParams = {
+				requestBody: {
+					name: filename,
+					mimeType: type as string,
+					parents: folderId ? [folderId] : undefined,
 				},
-				{
-					onUploadProgress(progress) {
-						if (typeof options?.onUpload === "function") {
+				media: {
+					mimeType: type as string,
+					body: stream,
+				},
+				fields: "*",
+			};
+			const ThisClass = this;
+			const additionalOptions: MethodOptions = {
+				onUploadProgress(progress) {
+					if (typeof options?.onUpload === "function") {
+						if (ThisClass._lastUploadProgressFunctionRun) {
+							if (ThisClass._lastUploadProgressFunctionRun - Date.now() < options.progressOptions?.time! ? options.progressOptions?.time : 2000) return;
+							else {
+								options?.onUpload({
+									bytesRead: progress.bytesRead,
+									size: stats.size,
+									percentage: convertToPercentage(progress.bytesRead, stats.size),
+								});
+								ThisClass._lastUploadProgressFunctionRun = Date.now();
+							}
+						} else {
+							ThisClass._lastUploadProgressFunctionRun = Date.now();
 							options?.onUpload({
 								bytesRead: progress.bytesRead,
 								size: stats.size,
 								percentage: convertToPercentage(progress.bytesRead, stats.size),
 							});
 						}
-					},
-					...options,
+					}
 				},
-			);
-			if (options?.useProgress) resolve(Progress as never);
-			else response.then((value) => resolve(value as never));
+				...options,
+			};
+			// const response = this.drive.files.create(params, additionalOptions);
+			const ThisDrive = this.drive;
+
+			if (typeof options?.onProgress === "function") options.onProgress(Progress);
+			async function AwaitUploadFile(params: UploadParams, options: MethodOptions) {
+				const res = await ThisDrive.files.create(params, options);
+				return res.data;
+			}
+			if (options?.returnStreamEvents) {
+				const res = ThisDrive.files.create(params, additionalOptions);
+				// const res = UploadFile(params, additionalOptions);
+				// resolve(response as never as progress.ProgressStream);
+				resolve(res as drive_v3.Schema$File);
+				// if (options.returnStreamEvents) resolve(Progress as progress.ProgressStream);
+				// else resolve(res as drive_v3.Schema$File);
+			} else {
+				AwaitUploadFile(params, additionalOptions).then((value) => resolve(value as drive_v3.Schema$File));
+			}
+			// else response.then((value) => resolve(value as never));
 		});
 	}
 	public async deleteFile(fileId: string) {
@@ -101,7 +130,6 @@ export default class GoogleDrive {
 	public async createPublicURL(fileId: string) {
 		await this.drive.permissions.create({
 			fileId,
-			// fields: '',
 			requestBody: {
 				role: "reader",
 				type: "anyone",
@@ -113,11 +141,7 @@ export default class GoogleDrive {
 		});
 		return result.data;
 	}
-	public async downloadFile(
-		fileId: string,
-		path: string,
-		options?: DownloadOptions,
-	) {
+	public async downloadFile(fileId: string, path: string, options?: DownloadOptions) {
 		return new Promise<progress.ProgressStream | number>((resolve, reject) => {
 			this.drive.files
 				.get(
@@ -127,7 +151,7 @@ export default class GoogleDrive {
 					},
 					{
 						responseType: "stream",
-					},
+					}
 				)
 				.then((file) => {
 					const str = progress({
@@ -152,8 +176,7 @@ export default class GoogleDrive {
 	}
 	public async createFolder(folderName: string) {
 		const result = this.drive.files.create({
-			// @ts-ignore
-			resource: {
+			requestBody: {
 				name: folderName,
 				mimeType: "application/vnd.google-apps.folder",
 			},
@@ -163,16 +186,15 @@ export default class GoogleDrive {
 	}
 	public async createFolderInFolder(folderName: string, folderId: string) {
 		try {
-			const results = this.drive.files.create({
-				// @ts-ignore
-				resource: {
+			const results = await this.drive.files.create({
+				requestBody: {
 					name: folderName,
 					parents: [folderId],
 					mimeType: "application/vnd.google-apps.folder",
 				},
-				fields: "id",
+				fields: "*",
 			});
-			return results;
+			return results.data;
 		} catch (err) {
 			console.log("There a error while creating folder\n", err);
 		}
@@ -183,11 +205,7 @@ export default class GoogleDrive {
 			fields: "nextPageToken, files(*)",
 		});
 		if (inFolderId) {
-			const mappedFiles = results.data.files?.filter((value) =>
-				includesTrash
-					? value.parents?.includes(inFolderId)
-					: value.parents?.includes(inFolderId) && value.trashed === false,
-			);
+			const mappedFiles = results.data.files?.filter((value) => (includesTrash ? value.parents?.includes(inFolderId) : value.parents?.includes(inFolderId) && value.trashed === false));
 			return { ...results.data, files: mappedFiles };
 		} else {
 			if (includesTrash) {
@@ -201,9 +219,8 @@ export default class GoogleDrive {
 		}
 	}
 	public async getDirectLink(fileId: string) {
-		const res = await axios.get<{ url: string }>(
-			`https://www.bagusdl.pro/drive/direct.php?id=${fileId}`,
-		);
-		return res.data;
+		const init = await fetch(`https://www.bagusdl.pro/drive/direct.php?id=${fileId}`);
+		const response: { url: string } = await init.json();
+		return response;
 	}
 }
