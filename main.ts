@@ -6,7 +6,6 @@ dotenv.config({ path: `${process.cwd()}/.env` });
 // Importing Bot Functions
 import "./Source/Welcomes";
 import "./Source/Metadata";
-import "./Source/Middleware";
 import "./Source/Actions/CloseButton";
 import "./Source/Actions/MoviesDownloader";
 
