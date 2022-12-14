@@ -35,7 +35,7 @@ bot.action(/480p/, async (ctx) => {
 	const caption = "<i>Tunggu Sebentar...</i>";
 	const context = await ctx.reply(caption, { parse_mode: "HTML" });
 	if (session?.data) {
-		const url = await acefile(session?.data.link_download["480p"]?.Googledrive!);
+		const url = await acefile(session?.data.link_download["480p"]?.Googledrive!, true);
 		const directory = path.resolve(process.cwd(), "Downloads");
 		const ext = mime.extension(url.mimeType);
 		const fileName = `${session?.data.title} (${session?.data.year}) 480p.${ext}`;
@@ -143,7 +143,7 @@ Terupload: <b>${formatAsPercent(progress.percentage)}</b>
 bot.action(/720p/, async (ctx) => {
 	const session = await Session.get(ctx.match.input.split(" ")[1]);
 	if (session?.data) {
-		const url = await acefile(session?.data.link_download["720p"]?.Googledrive!);
+		const url = await acefile(session?.data.link_download["720p"]?.Googledrive!, true);
 		// console.log(url.id);
 		const directory = path.resolve(process.cwd(), "Downloads");
 		const ext = mime.extension(url.mimeType);
@@ -255,7 +255,7 @@ Terupload: <b>${formatAsPercent(progress.percentage)}</b>
 bot.action(/1080p/, async (ctx) => {
 	const session = await Session.get(ctx.match.input.split(" ")[1]);
 	if (session?.data) {
-		const url = await acefile(session?.data.link_download["1080p"]?.Googledrive!);
+		const url = await acefile(session?.data.link_download["1080p"]?.Googledrive!, true);
 		const directory = path.resolve(process.cwd(), "Downloads");
 		const ext = mime.extension(url.mimeType);
 		const fileName = `${session?.data.title} (${session?.data.year}) 1080p.${ext}`;
