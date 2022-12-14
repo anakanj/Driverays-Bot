@@ -1,6 +1,5 @@
 import bot, { drive } from "./Source/main";
 import { Logger } from "./Source/Utils/Logger";
-import GoogleDrive from "./GDrive/Drive";
 import * as dotenv from "dotenv";
 dotenv.config({ path: `${process.cwd()}/.env` });
 
@@ -8,8 +7,10 @@ dotenv.config({ path: `${process.cwd()}/.env` });
 import "./Source/Welcomes";
 import "./Source/Metadata";
 import "./Source/Middleware";
-import "./Source/Downloader";
 import "./Source/Actions/CloseButton";
+import "./Source/Actions/MoviesDownloader";
+
+// Bot Start Function
 async function init() {
 	Logger.info("Checking Files");
 	const { files } = await drive.listFiles();
@@ -18,20 +19,14 @@ async function init() {
 	const results = files?.find((value) => value.name === "Driverays");
 	if (results) {
 		const { files: files_in_driverays } = await drive.listFiles(results.id!);
-		const movies_folder = files_in_driverays?.find(
-			(value) => value.name === "Movies",
-		);
-		const series_folder = files_in_driverays?.find(
-			(value) => value.name === "Series",
-		);
+		const movies_folder = files_in_driverays?.find((value) => value.name === "Movies");
+		const series_folder = files_in_driverays?.find((value) => value.name === "Series");
 		let movies_length: number | undefined = undefined;
 		let series_length: number | undefined = undefined;
 		if (movies_folder) {
 			// Logger.info("Listing Movies...");
 			const list = await drive.listFiles(movies_folder.id!);
-			const filtered = list.files?.filter(
-				(values) => values.mimeType === "application/vnd.google-apps.folder",
-			);
+			const filtered = list.files?.filter((values) => values.mimeType === "application/vnd.google-apps.folder");
 			// Logger.info(`Ditemukan ${filtered?.length} Film`);
 			movies_length = filtered?.length;
 		} else {
@@ -41,9 +36,7 @@ async function init() {
 		if (series_folder) {
 			// Logger.info("Listing Series...");
 			const list = await drive.listFiles(series_folder.id!);
-			const filtered = list.files?.filter(
-				(values) => values.mimeType === "application/vnd.google-apps.folder",
-			);
+			const filtered = list.files?.filter((values) => values.mimeType === "application/vnd.google-apps.folder");
 			series_length = filtered?.length;
 			// Logger.info(`Ditemukan ${filtered?.length} Series`);
 		} else {
@@ -60,5 +53,5 @@ async function init() {
 	bot.launch();
 	Logger.info("Bot Has Been Started");
 }
-await init();
+init();
 // console.log("Bot is Started!");
