@@ -7,7 +7,7 @@ import path from "path";
 import { formatAsBytes, formatAsPercent } from "../Utils/Formatters";
 import progress_stream from "progress-stream";
 import { drive_v3 } from "googleapis";
-
+import { Logger } from "../Utils/Logger";
 interface DownloadCaption {
 	title: string;
 	year: string;
@@ -127,9 +127,20 @@ Terupload: <b>${formatAsPercent(progress.percentage)}</b>
 					}
 					if (!findMoviesFolder) {
 						const folder = await drive.createFolderInFolder(folderName, folderId!);
-						await UploadFiles(folder?.id!);
+						try {
+							await UploadFiles(folder?.id!);
+						} catch (error) {
+							Logger.error("Terjadi Error pada saat Upload, mencoba lagi...");
+							await UploadFiles(folder?.id!);
+						}
+						// await UploadFiles(folder?.id!);
 					} else {
-						await UploadFiles(findMoviesFolder.id!);
+						try {
+							await UploadFiles(findMoviesFolder.id!);
+						} catch (error) {
+							Logger.error("Terjadi Error pada saat Upload, mencoba lagi...");
+							await UploadFiles(findMoviesFolder.id!);
+						}
 					}
 				});
 			}
@@ -242,9 +253,19 @@ Terupload: <b>${formatAsPercent(progress.percentage)}</b>
 					}
 					if (!findMoviesFolder) {
 						const folder = await drive.createFolderInFolder(folderName, folderId!);
-						await UploadFiles(folder?.id!);
+						try {
+							await UploadFiles(folder?.id!);
+						} catch (error) {
+							Logger.error("Terjadi Error pada saat Upload, mencoba lagi...");
+							await UploadFiles(folder?.id!);
+						}
 					} else {
-						await UploadFiles(findMoviesFolder.id!);
+						try {
+							await UploadFiles(findMoviesFolder.id!);
+						} catch (error) {
+							Logger.error("Terjadi Error pada saat Upload, mencoba lagi...");
+							await UploadFiles(findMoviesFolder.id!);
+						}
 					}
 				});
 			}
@@ -353,9 +374,19 @@ Terupload: <b>${formatAsPercent(progress.percentage)}</b>
 					}
 					if (!findMoviesFolder) {
 						const folder = await drive.createFolderInFolder(folderName, folderId!);
-						await UploadFiles(folder?.id!);
+						try {
+							await UploadFiles(folder?.id!);
+						} catch (error) {
+							Logger.error("Terjadi Error pada saat Upload, mencoba lagi...");
+							await UploadFiles(folder?.id!);
+						}
 					} else {
-						await UploadFiles(findMoviesFolder.id!);
+						try {
+							await UploadFiles(findMoviesFolder.id!);
+						} catch (error) {
+							Logger.error("Terjadi Error pada saat Upload, mencoba lagi...");
+							await UploadFiles(findMoviesFolder.id!);
+						}
 					}
 				});
 			}
