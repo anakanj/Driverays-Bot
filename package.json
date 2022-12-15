@@ -9,7 +9,7 @@
     "build": "tsc && cp .env Compiled",
     "start": "node --watch --loader ts-node/esm --experimental-specifier-resolution node main.ts",
     "start:build": "cd Compiled && node main.js",
-    "dev": "nodemon --watch './**/*.ts' --exec 'node --experimental-specifier-resolution=node --loader ts-node/esm' main.ts"
+    "dev": "nodemon --watch 'Source' --ext 'ts' --exec 'tsc && cp .env Compiled && cd Compiled && node main.js'"
   },
   "author": "Kenzuya",
   "license": "ISC",
