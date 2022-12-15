@@ -78,10 +78,11 @@ bot.action(/480p/, async (ctx) => {
 	
 <b>Mempersiapkan Tahap Upload...</b>
 					`;
-
-					await ctx.telegram.editMessageText(context.chat.id, context.message_id, undefined, completedMessage, {
-						parse_mode: "HTML",
-					});
+					setTimeout(async () => {
+						await ctx.telegram.editMessageText(context.chat.id, context.message_id, undefined, completedMessage, {
+							parse_mode: "HTML",
+						});
+					}, 500);
 					const files = await drive.listFiles();
 					const folderId = files.files?.find((value) => value.name === "Movies" && value.mimeType === "application/vnd.google-apps.folder")?.id;
 					const inFolderMovies = files.files?.filter((value) => value.parents?.includes(folderId!));
@@ -110,7 +111,9 @@ Terupload: <b>${formatAsPercent(progress.percentage)}</b>
 	
 <b>Tunggu Sebentar</b>
 									`;
-										await ctx.telegram.editMessageText(context.chat.id, context.message_id, undefined, finishMessage, { parse_mode: "HTML" });
+										setTimeout(async () => {
+											await ctx.telegram.editMessageText(context.chat.id, context.message_id, undefined, finishMessage, { parse_mode: "HTML" });
+										}, 500);
 									});
 								},
 							}
@@ -190,10 +193,11 @@ bot.action(/720p/, async (ctx) => {
 	
 <b>Mempersiapkan Tahap Upload...</b>
 					`;
-
-					await ctx.telegram.editMessageText(context.chat.id, context.message_id, undefined, completedMessage, {
-						parse_mode: "HTML",
-					});
+					setTimeout(async () => {
+						await ctx.telegram.editMessageText(context.chat.id, context.message_id, undefined, completedMessage, {
+							parse_mode: "HTML",
+						});
+					}, 500);
 					const files = await drive.listFiles();
 					const folderId = files.files?.find((value) => value.name === "Movies" && value.mimeType === "application/vnd.google-apps.folder")?.id;
 					const inFolderMovies = files.files?.filter((value) => value.parents?.includes(folderId!));
@@ -222,7 +226,9 @@ Terupload: <b>${formatAsPercent(progress.percentage)}</b>
 	
 <b>Tunggu Sebentar</b>
 									`;
-										await ctx.telegram.editMessageText(context.chat.id, context.message_id, undefined, finishMessage, { parse_mode: "HTML" });
+										setTimeout(async () => {
+											await ctx.telegram.editMessageText(context.chat.id, context.message_id, undefined, finishMessage, { parse_mode: "HTML" });
+										}, 500);
 									});
 								},
 							}
@@ -298,10 +304,11 @@ bot.action(/1080p/, async (ctx) => {
 
 <b>Mempersiapkan Tahap Upload...</b>
 					`;
-
-					await ctx.telegram.editMessageText(context.chat.id, context.message_id, undefined, completedMessage, {
-						parse_mode: "HTML",
-					});
+					setTimeout(async () => {
+						await ctx.telegram.editMessageText(context.chat.id, context.message_id, undefined, completedMessage, {
+							parse_mode: "HTML",
+						});
+					}, 500);
 					const files = await drive.listFiles();
 					const folderId = files.files?.find((value) => value.name === "Movies" && value.mimeType === "application/vnd.google-apps.folder")?.id;
 					const inFolderMovies = files.files?.filter((value) => value.parents?.includes(folderId!));
@@ -330,7 +337,9 @@ Terupload: <b>${formatAsPercent(progress.percentage)}</b>
 
 <b>Tunggu Sebentar</b>
 									`;
-										await ctx.telegram.editMessageText(context.chat.id, context.message_id, undefined, finishMessage, { parse_mode: "HTML" });
+										setTimeout(async () => {
+											await ctx.telegram.editMessageText(context.chat.id, context.message_id, undefined, finishMessage, { parse_mode: "HTML" });
+										}, 500);
 									});
 								},
 							}
