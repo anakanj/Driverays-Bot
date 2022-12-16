@@ -23,7 +23,7 @@ Sinopsis : <span class="tg-spoiler">${data.synopsis}</span>
 		`;
 
 		const session_key = await Session.store(tg.update.message.from.id, data);
-
+		const resolution_key = Object.keys(data.link_download);
 		await tg.telegram.sendPhoto(
 			tg.update.message.from.id,
 			{ url: data.image },
@@ -32,27 +32,15 @@ Sinopsis : <span class="tg-spoiler">${data.synopsis}</span>
 				parse_mode: "HTML",
 				// Markup
 				reply_markup: {
-					inline_keyboard: [
-						[
-							Markup.button.callback("480p", `480p ${session_key}`),
-							Markup.button.callback("720p", `720p ${session_key}`),
-							Markup.button.callback("1080p", `1080p ${session_key}`),
-						],
-						[Markup.button.callback("Close", "close")],
-					],
+					inline_keyboard: [resolution_key.map((value) => Markup.button.callback(value, `${value} ${session_key}`)), [Markup.button.callback("Close", "close")]],
 				},
-			},
+			}
 		);
 		tg.deleteMessage(context.message_id);
 	} catch (err) {
 		// tg.deleteMessage(context.message_id);
 		// tg.editMessageText("Terjadi Error ketika mendapatkan info URL...", {})
-		tg.telegram.editMessageText(
-			context.chat.id,
-			context.message_id,
-			undefined,
-			"Terjadi Error ketika mendapatkan info URL...",
-		);
+		tg.telegram.editMessageText(context.chat.id, context.message_id, undefined, "Terjadi Error ketika mendapatkan info URL...");
 		// tg.reply();
 		console.log(err);
 	}
