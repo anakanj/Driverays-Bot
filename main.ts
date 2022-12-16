@@ -8,7 +8,7 @@ import "./Source/Welcomes";
 import "./Source/Metadata";
 import "./Source/Actions/CloseButton";
 import "./Source/Actions/MoviesDownloader";
-
+import "./Source/Events/InlineQuery";
 // Bot Start Function
 async function init() {
 	Logger.info("Checking Files");
