@@ -1,21 +1,17 @@
 import bot from "../main";
 import { DriveraysSearch } from "../../Driverays/Search";
 import { Driverays } from "../../Driverays";
-import { InlineQueryResult } from "telegraf/typings/core/types/typegram";
+import { InlineQueryResultArticle } from "telegraf/typings/core/types/typegram";
+import crypto from "crypto";
 bot.on("inline_query", async (ctx) => {
-	console.log(ctx.update.inline_query);
+	if (ctx.update.inline_query.chat_type !== "sender") return ctx.answerInlineQuery([]);
 	if (ctx.update.inline_query.query) {
 		const res = await DriveraysSearch(ctx.update.inline_query.query);
-		// console.log(res);
-		const answerResult = res.map((value): InlineQueryResult => {
-			const url = new URL(value.link!);
+		const answerResult = res.map((value): InlineQueryResultArticle => {
 			return {
 				type: "article",
-				id: url.pathname,
-				title: value.title!,
-				thumb_url: value.image,
-				thumb_height: 150,
-				thumb_width: 100,
+				id: crypto.randomUUID(),
+				title: `${value.title} (${value.year})`,
 				description: value.quality!,
 				input_message_content: {
 					message_text: value.link!,
@@ -25,15 +21,11 @@ bot.on("inline_query", async (ctx) => {
 		return await ctx.answerInlineQuery(answerResult);
 	} else {
 		const res = await Driverays("https://167.86.71.48/category/movies/");
-		const answerResult = res.map((value): InlineQueryResult => {
-			const url = new URL(value.link!);
+		const answerResult = res.map((value): InlineQueryResultArticle => {
 			return {
 				type: "article",
-				id: url.pathname,
-				title: value.title!,
-				thumb_url: value.image,
-				thumb_height: 150,
-				thumb_width: 100,
+				id: crypto.randomUUID(),
+				title: `${value.title} (${value.year})`,
 				description: value.quality!,
 				input_message_content: {
 					message_text: value.link!,
