@@ -2,7 +2,7 @@
     "typescript.tsdk": "node_modules/typescript/lib",
     "code-runner.executorMap": {
         "javascript": "node",
-        "typescript": "node --loader ts-node/esm --experimental-specifier-resolution node $dir$fileNameWithoutExt",
+        "typescript": "ts-node $dir$fileNameWithoutExt",
     },
     "code-runner.clearPreviousOutput": true,
     "code-runner.saveFileBeforeRun": true
