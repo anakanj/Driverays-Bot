@@ -54,4 +54,4 @@ export default async function UploadImage(url: string) {
 	return ImageResults as UploadImageResults;
 }
 // main();
-UploadImage("https://167.86.71.48/wp-content/uploads/2021/11/1637484379_30ULVKdjBcQTsj2aOSThXXZNSxF.jpg");
+// UploadImage("https://167.86.71.48/wp-content/uploads/2021/11/1637484379_30ULVKdjBcQTsj2aOSThXXZNSxF.jpg");
