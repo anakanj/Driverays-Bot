@@ -6,8 +6,8 @@
   "type": "commonjs",
   "scripts": {
     "test": "node --loader ts-node/esm --experimental-specifier-resolution node test.ts",
-    "build": "tsc && cp .env Compiled",
-    "start": "node --watch --loader ts-node/esm --experimental-specifier-resolution node main.ts",
+    "build": "tsc",
+    "start": "node Compiled/main.js",
     "start:build": "cd Compiled && node main.js",
     "dev": "nodemon --watch 'Source' --ext 'ts' --exec 'tsc && cp .env Compiled && cd Compiled && node main.js'"
   },
