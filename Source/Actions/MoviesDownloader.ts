@@ -157,6 +157,7 @@ Terupload: <b>${formatAsPercent(progress.percentage)}</b>
 bot.action(/720p/, async (ctx) => {
 	const session = await Session.get(ctx.match.input.split(" ")[1]);
 	if (session?.data) {
+		ctx.deleteMessage();
 		const caption = "<i>Tunggu Sebentar...</i>";
 		const context = await ctx.reply(caption, { parse_mode: "HTML" });
 		const map = new Map<"data", AcefileAwaited>();
@@ -176,7 +177,6 @@ bot.action(/720p/, async (ctx) => {
 		const fileName = `${session?.data.title} (${session?.data.year}) 720p.${ext}`;
 		const folderName = `${session?.data.title} (${session?.data.year})`;
 		const fileDirectory = path.resolve(directory, fileName);
-		ctx.deleteMessage();
 		async function downloadFiles() {
 			const listFiles = await drive.listFiles();
 			// const filtered = listFiles.files?.find((value) => value.name?.includes(folderName))
