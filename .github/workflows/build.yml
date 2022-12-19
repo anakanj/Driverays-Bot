@@ -16,3 +16,24 @@ jobs:
       run: npm install
     - name: Compiling Code
       uses: icrawl/action-tsc@v1
+    - name : Zipping Files
+    - run: |
+        # if zip is not found
+        if [ ! -x "$(command -v zip)" ]; then
+            sudo apt-get update && sudo apt-get install -y zip --no-install-recommends
+        fi
+        zip -r driverays-bot.zip Compiled
+    - name: Release
+      id: release
+      uses: ncipollo/release-action@v1
+      with: 
+        prerelease: true
+        body: "Build ini berdasarkan commit (${{ github.sha}})"
+        allowUpdates: true
+        replacesArtifacts: true
+        generateReleaseNotes: false
+        artifactErrorsFailBuild: true
+        token: ${{ secrets.ACCESS_TOKEN }}
+        name: "Build (${{github.sha}})"
+        tag: "build"
+        artifacs: "driverays-bot.zip"
