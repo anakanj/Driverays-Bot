@@ -17,13 +17,12 @@ jobs:
     - name: Compiling Code
       uses: icrawl/action-tsc@v1
     - name : Zipping Files
-    - run: |
+      run: |
         # if zip is not found
         if [ ! -x "$(command -v zip)" ]; then
             sudo apt-get update && sudo apt-get install -y zip --no-install-recommends
         fi
         zip -r driverays-bot.zip Compiled
-    - uses: actions/upload-artifact@v3
     - name: Release
       id: release
       uses: ncipollo/release-action@v1
