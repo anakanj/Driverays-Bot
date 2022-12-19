@@ -157,16 +157,26 @@ Terupload: <b>${formatAsPercent(progress.percentage)}</b>
 bot.action(/720p/, async (ctx) => {
 	const session = await Session.get(ctx.match.input.split(" ")[1]);
 	if (session?.data) {
-		const url = await acefile(session?.data.link_download["720p"]?.Googledrive!, true);
+		const caption = "<i>Tunggu Sebentar...</i>";
+		const context = await ctx.reply(caption, { parse_mode: "HTML" });
+		const map = new Map<"data", AcefileAwaited>();
+		type AcefileResolved = ReturnType<typeof acefile>;
+		type AcefileAwaited = Awaited<AcefileResolved>;
+		try {
+			const url = await acefile(session?.data.link_download["720p"]?.Googledrive!, true);
+			map.set("data", url);
+		} catch (error) {
+			const errorMessage = "<i>Terjadi Error Saat Memproses Link</i>";
+			ctx.telegram.editMessageText(context.chat.id, context.message_id, undefined, errorMessage, { parse_mode: "HTML" });
+			return;
+		}
 		// console.log(url.id);
 		const directory = path.resolve(process.cwd(), "Downloads");
-		const ext = mime.extension(url.mimeType);
+		const ext = mime.extension(map.get("data")!.mimeType);
 		const fileName = `${session?.data.title} (${session?.data.year}) 720p.${ext}`;
 		const folderName = `${session?.data.title} (${session?.data.year})`;
 		const fileDirectory = path.resolve(directory, fileName);
 		ctx.deleteMessage();
-		const caption = "<i>Tunggu Sebentar...</i>";
-		const context = await ctx.reply(caption, { parse_mode: "HTML" });
 		async function downloadFiles() {
 			const listFiles = await drive.listFiles();
 			// const filtered = listFiles.files?.find((value) => value.name?.includes(folderName))
@@ -180,7 +190,7 @@ bot.action(/720p/, async (ctx) => {
 				if (!Movies.shared) await drive.createPublicURL(Movies.id!);
 				ctx.telegram.editMessageText(context.chat.id, context.message_id, undefined, filmMessage, { parse_mode: "HTML" });
 			} else {
-				const download = (await drive.downloadFile(url.id, fileDirectory, {
+				const download = (await drive.downloadFile(map.get("data")!.id, fileDirectory, {
 					time: 2000,
 					useProgress: true,
 				})) as progress_stream.ProgressStream;
