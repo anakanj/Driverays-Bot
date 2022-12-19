@@ -4,11 +4,11 @@ on:
 
 jobs:
   tsc:
-    name: Building
+    name: TypeScript Build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: install node v18
+    - name: Installing Node.js v18
       uses: actions/setup-node@v1
       with:
         node-version: 18
@@ -18,13 +18,12 @@ jobs:
       run: npm run build
     - name : Zipping Files
       run: |
-        ls
         # if zip is not found
         if [ ! -x "$(command -v zip)" ]; then
             sudo apt-get update && sudo apt-get install -y zip --no-install-recommends
         fi
         zip -r driverays-bot.zip Compiled
-    - name: Release
+    - name: Publish Pre-Release
       id: release
       uses: ncipollo/release-action@v1
       with: 
