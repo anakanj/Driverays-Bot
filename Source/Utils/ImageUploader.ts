@@ -24,7 +24,7 @@ export default async function UploadImage(url: string) {
 	data.append("numfiles", 1);
 	data.append("ui", `[24, 1920, 1080, "true", "", "", ${date.toLocaleString("id")}]`);
 	data.append("optsize", 0);
-	data.append("expire", 1);
+	data.append("expire", 0);
 	data.append("session_upload", Date.now());
 	const result = await fetch("https://postimages.org/json/rr", {
 		method: "POST",
