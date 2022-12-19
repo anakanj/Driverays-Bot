@@ -15,7 +15,7 @@ jobs:
     - name: Installing Dependencies
       run: npm install
     - name: Compiling Code
-      uses: icrawl/action-tsc@v1
+      run: npm run build
     - name : Zipping Files
       run: |
         ls
