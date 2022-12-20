@@ -3,7 +3,7 @@ import cheerio from "cheerio";
 import { AceFileVideoPlayer } from "./VideoPlayer";
 import { HttpsProxyAgent } from "https-proxy-agent";
 
-const proxy = new HttpsProxyAgent("http://182.253.109.41:8080");
+const proxy = new HttpsProxyAgent("http://147.139.173.19:3128");
 async function acefile(url: string, useProxy = false) {
 	const response = await (await fetch(url, { agent: useProxy ? proxy : undefined })).text();
 	const $ = cheerio.load(response);
